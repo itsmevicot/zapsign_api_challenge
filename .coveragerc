@@ -1,0 +1,7 @@
+[run]
+omit =
+    manage.py
+    zapsign/asgi.py
+    zapsign/wsgi.py
+    */migrations/*
+    */__init__.py
