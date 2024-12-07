@@ -6,12 +6,20 @@ from apps.companies.models import Company
 
 
 class CompanyRepository:
+
+    @staticmethod
+    def get_company_by_email(email: str) -> Optional[Company]:
+        """
+        Fetch a company by its email.
+        """
+        return Company.objects.get(email=email)
+
     @staticmethod
     def get_company_by_id(company_id: int) -> Optional[Company]:
         """
         Fetch a company by its ID.
         """
-        return Company.objects.filter(id=company_id).first()
+        return Company.objects.get(id=company_id)
 
     @staticmethod
     def get_all_companies(is_active: Optional[bool] = None) -> QuerySet:

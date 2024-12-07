@@ -1,3 +1,5 @@
+import uuid
+
 from rest_framework import serializers
 
 from apps.companies.models import Company
@@ -10,9 +12,36 @@ class CompanySerializer(serializers.ModelSerializer):
 
 
 class CompanyCreateSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    name = serializers.CharField(max_length=255, required=True)
+    api_token = serializers.CharField(max_length=255, required=True)
+    password = serializers.CharField(write_only=True, required=True)
+
+    def validate_email(self, value):
+        """
+        Validate that the email is unique.
+        """
+        if Company.objects.filter(email=value).exists():
+            raise serializers.ValidationError("A company with this email already exists.")
+        return value
+
+    def validate_api_token(self, value):
+        """
+        Validate that the api_token is a valid UUID if provided.
+        """
+        try:
+            uuid.UUID(value)
+        except ValueError:
+            raise serializers.ValidationError("The API token must be a valid UUID.")
+
+        return value
+
+
+class CompanyCreateResponseSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
     email = serializers.EmailField()
     name = serializers.CharField(max_length=255)
-    api_token = serializers.CharField(max_length=255)
+    created_at = serializers.DateTimeField()
 
 
 class CompanyUpdateSerializer(serializers.Serializer):
