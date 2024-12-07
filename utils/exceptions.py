@@ -71,3 +71,83 @@ class UnauthorizedSignerAccessException(ExceptionMessageBuilder):
         self.message = f"You are not authorized to access signer ID {signer_id}."
         self.status_code = status.HTTP_403_FORBIDDEN
         self.detail = {"title": self.title, "message": self.message}
+
+
+class FailedToCreateDocumentException(ExceptionMessageBuilder):
+    def __init__(self):
+        self.title = "Failed to Create Document"
+        self.message = "The document could not be created in the database."
+        self.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        self.detail = {"title": self.title, "message": self.message}
+
+
+class FailedToCreateDocumentInZapSignException(ExceptionMessageBuilder):
+    def __init__(self):
+        self.title = "Failed to Create Document in ZapSign"
+        self.message = "The document could not be created in the ZapSign API."
+        self.status_code = status.HTTP_502_BAD_GATEWAY
+        self.detail = {"title": self.title, "message": self.message}
+
+
+class MissingZapSignResponseFieldsException(ExceptionMessageBuilder):
+    def __init__(self):
+        self.title = "Missing Fields in ZapSign Response"
+        self.message = "The ZapSign API response is missing required fields."
+        self.status_code = status.HTTP_502_BAD_GATEWAY
+        self.detail = {"title": self.title, "message": self.message}
+
+
+class FailedToUpdateDocumentException(ExceptionMessageBuilder):
+    def __init__(self):
+        self.title = "Failed to Update Document"
+        self.message = "The document could not be updated with ZapSign details."
+        self.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        self.detail = {"title": self.title, "message": self.message}
+
+
+class FailedToCreateSignerException(ExceptionMessageBuilder):
+    def __init__(self):
+        self.title = "Failed to Create Signer"
+        self.message = "The signer could not be added to the document."
+        self.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        self.detail = {"title": self.title, "message": self.message}
+
+
+class MissingRefreshTokenException(ExceptionMessageBuilder):
+    def __init__(self):
+        self.title = "Refresh Token Missing"
+        self.message = "The refresh token is required but was not provided."
+        self.status_code = status.HTTP_400_BAD_REQUEST
+        self.detail = {"title": self.title, "message": self.message}
+
+
+class FailedToBlacklistTokenException(ExceptionMessageBuilder):
+    def __init__(self, reason: str):
+        self.title = "Failed to Blacklist Token"
+        self.message = f"An error occurred while blacklisting the refresh token: {reason}"
+        self.status_code = status.HTTP_400_BAD_REQUEST
+        self.detail = {"title": self.title, "message": self.message}
+
+
+class CompanyAlreadyExistsException(ExceptionMessageBuilder):
+    def __init__(self, email: str):
+        self.title = "Company Already Exists"
+        self.message = f"A company with the email '{email}' already exists."
+        self.status_code = status.HTTP_400_BAD_REQUEST
+        self.detail = {"title": self.title, "message": self.message}
+
+
+class PasswordValidationException(ExceptionMessageBuilder):
+    def __init__(self, errors: list):
+        self.title = "Password Validation Failed"
+        self.message = "The password provided does not meet the security requirements."
+        self.status_code = status.HTTP_400_BAD_REQUEST
+        self.detail = {"title": self.title, "message": self.message, "errors": errors}
+
+
+class RegistrationFailedException(ExceptionMessageBuilder):
+    def __init__(self):
+        self.title = "Registration Failed"
+        self.message = "An unexpected error occurred during registration."
+        self.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        self.detail = {"title": self.title, "message": self.message}
