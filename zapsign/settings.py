@@ -29,6 +29,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CORS_ALLOW_ALL_ORIGINS = True
+
 
 # Application definition
 
@@ -42,8 +44,11 @@ INSTALLED_APPS = [
     'apps.companies',
     'apps.documents',
     'apps.signers',
+    'apps.zapsign_integration',
     'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
     'drf_yasg',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -54,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'zapsign.urls'
@@ -146,7 +152,6 @@ REST_FRAMEWORK = {
         "%d/%m/%YT%H:%M",
         "%d/%m/%YT%H:%M:%S",
     ]
-
 }
 
 # SMTP
@@ -188,11 +193,12 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
-    'BLACKLIST_AFTER_ROTATION': False,
+    'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': SECRET_KEY,
     'VERIFYING_KEY': None,
     'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
 }
 
 
@@ -227,6 +233,10 @@ LOGGING = {
     },
 }
 
+# ZapSign
+
+ZAPSIGN_BASE_URL = config('ZAPSIGN_BASE_URL')
+ZAPSIGN_API_TOKEN = config('ZAPSIGN_API_TOKEN')
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
