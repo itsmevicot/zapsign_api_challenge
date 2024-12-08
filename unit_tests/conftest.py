@@ -72,13 +72,14 @@ def test_company(db):
 
 
 @pytest.fixture
-def test_document(db, test_company):
+def test_document(db, authenticated_user):
     """
-    Creates and returns a test document for a test company.
+    Creates and returns a test document for the authenticated user's company.
     """
+    company = authenticated_user.handler._force_user
     return Document.objects.create(
         name="Test Document",
-        company=test_company,
+        company=company,
     )
 
 
@@ -94,3 +95,13 @@ def test_signer(db, test_document):
         email="test@signer.com",
         document=test_document,
     )
+
+
+@pytest.fixture
+def signers(db, test_document):
+    """
+    Creates and returns a list of signers for the test document.
+    """
+    signer_1 = Signer.objects.create(name="Signer 1", email="signer1@example.com", document=test_document)
+    signer_2 = Signer.objects.create(name="Signer 2", email="signer2@example.com", document=test_document)
+    return [signer_1, signer_2]
