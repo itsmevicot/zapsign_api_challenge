@@ -9,9 +9,6 @@ services:
       - .env
     depends_on:
       - postgres
-      - redis
-      - celery
-      - celery-beat
     volumes:
       - .:/app
 
@@ -25,33 +22,6 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
-  redis:
-    image: redis:alpine
-    ports:
-      - "6379:6379"
-
-  celery:
-    build:
-      context: .
-    command: celery -A zapsign worker --loglevel=info
-    env_file:
-      - .env
-    depends_on:
-      - redis
-    volumes:
-      - .:/app
-
-  celery-beat:
-    build:
-      context: .
-    command: celery -A zapsign beat --loglevel=info
-    env_file:
-      - .env
-    depends_on:
-      - redis
-    volumes:
-      - .:/app
 
 volumes:
   postgres_data:
