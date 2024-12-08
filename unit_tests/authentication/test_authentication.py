@@ -1,7 +1,6 @@
 import pytest
 from unittest.mock import patch
 from rest_framework import status
-
 from apps.authentication.serializers import TokenResponseSerializer
 from utils.exceptions import (
     InvalidCredentialsException,
@@ -32,7 +31,7 @@ def test_login_success(mock_auth_service, api_client):
 @pytest.mark.django_db
 @patch("apps.authentication.views.AuthenticationService")
 def test_login_invalid_credentials(mock_auth_service, api_client):
-    mock_auth_service.return_value.login.side_effect = InvalidCredentialsException()
+    exception = mock_auth_service.return_value.login.side_effect = InvalidCredentialsException()
 
     response = api_client.post(
         "/api/v1/auth/login/",
@@ -40,9 +39,9 @@ def test_login_invalid_credentials(mock_auth_service, api_client):
         format="json",
     )
 
-    assert response.status_code == status.HTTP_401_UNAUTHORIZED
-    assert response.data["error"]["title"] == "Invalid Credentials"
-    assert response.data["error"]["message"] == "The provided email or password is incorrect."
+    assert response.status_code == exception.status_code
+    assert response.data["error"]["title"] == exception.title
+    assert response.data["error"]["message"] == exception.message
 
 
 @pytest.mark.django_db
@@ -75,9 +74,7 @@ def test_register_success(mock_auth_service, api_client):
 @pytest.mark.django_db
 @patch("apps.authentication.views.AuthenticationService")
 def test_register_existing_email(mock_auth_service, api_client):
-    mock_auth_service.return_value.register.side_effect = CompanyAlreadyExistsException(
-        email="test@company.com"
-    )
+    exception = mock_auth_service.return_value.register.side_effect = CompanyAlreadyExistsException()
 
     response = api_client.post(
         "/api/v1/auth/register/",
@@ -91,9 +88,9 @@ def test_register_existing_email(mock_auth_service, api_client):
         format="json",
     )
 
-    assert response.status_code == status.HTTP_409_CONFLICT
-    assert response.data["error"]["title"] == "Company Already Exists"
-    assert response.data["error"]["message"] == "A company with the email 'test@company.com' already exists."
+    assert response.status_code == exception.status_code
+    assert response.data["error"]["title"] == exception.title
+    assert response.data["error"]["message"] == exception.message
 
 
 @pytest.mark.django_db
@@ -112,7 +109,7 @@ def test_logout_success(mock_auth_service, api_client):
 @pytest.mark.django_db
 @patch("apps.authentication.views.AuthenticationService")
 def test_logout_missing_token(mock_auth_service, api_client):
-    mock_auth_service.return_value.logout.side_effect = MissingRefreshTokenException()
+    exception = mock_auth_service.return_value.logout.side_effect = MissingRefreshTokenException()
 
     response = api_client.post(
         "/api/v1/auth/logout/",
@@ -120,17 +117,15 @@ def test_logout_missing_token(mock_auth_service, api_client):
         format="json",
     )
 
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.data["error"]["title"] == "Refresh Token Missing"
-    assert response.data["error"]["message"] == "The refresh token is required but was not provided."
+    assert response.status_code == exception.status_code
+    assert response.data["error"]["title"] == exception.title
+    assert response.data["error"]["message"] == exception.message
 
 
 @pytest.mark.django_db
 @patch("apps.authentication.views.AuthenticationService")
 def test_logout_blacklist_failure(mock_auth_service, api_client):
-    mock_auth_service.return_value.logout.side_effect = FailedToBlacklistTokenException(
-        reason="Token invalid."
-    )
+    exception = mock_auth_service.return_value.logout.side_effect = FailedToBlacklistTokenException()
 
     response = api_client.post(
         "/api/v1/auth/logout/",
@@ -138,6 +133,6 @@ def test_logout_blacklist_failure(mock_auth_service, api_client):
         format="json",
     )
 
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.data["error"]["title"] == "Failed to Blacklist Token"
-    assert response.data["error"]["message"] == "An error occurred while blacklisting the refresh token: Token invalid."
+    assert response.status_code == exception.status_code
+    assert response.data["error"]["title"] == exception.title
+    assert response.data["error"]["message"] == exception.message
