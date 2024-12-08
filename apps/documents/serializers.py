@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from apps.documents.models import Document
-from apps.signers.serializers import SignerSerializer
+from apps.signers.serializers import SignerSerializer, SignerCreateSerializer
 
 
 class DocumentSerializer(serializers.ModelSerializer):
@@ -15,12 +15,14 @@ class DocumentSerializer(serializers.ModelSerializer):
 
 
 class DocumentCreateSerializer(serializers.Serializer):
-    open_id = serializers.IntegerField()
-    token = serializers.CharField(max_length=255)
     name = serializers.CharField(max_length=255)
-    status = serializers.CharField(max_length=50)
-    created_by = serializers.CharField(max_length=255)
-    company_id = serializers.IntegerField()
+    url_pdf = serializers.URLField(required=True)
+    signers = SignerCreateSerializer(many=True)
+
+    def validate(self, data):
+        if not data.get("signers"):
+            raise serializers.ValidationError("At least one signer is required.")
+        return data
 
 
 class DocumentUpdateSerializer(serializers.Serializer):

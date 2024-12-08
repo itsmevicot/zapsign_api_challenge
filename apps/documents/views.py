@@ -54,7 +54,7 @@ class DocumentListView(APIView):
         """
         serializer = DocumentCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        document = self.document_service.create_document(serializer.data)
+        document = self.document_service.create_document(request.user, serializer.data)
         return Response(DocumentSerializer(document).data, status=status.HTTP_201_CREATED)
 
 

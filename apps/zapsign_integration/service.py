@@ -53,7 +53,7 @@ class ZapSignService:
             }
 
             logger.info(f"Creating document with payload: {payload}")
-            response = requests.post(self.api_base_url, headers=self.get_headers(), json=payload)
+            response = requests.post(f"{self.api_base_url}/docs/", headers=self.get_headers(), json=payload)
 
             if response.status_code != 201:
                 logger.error(f"Failed to create document: {response.text}")

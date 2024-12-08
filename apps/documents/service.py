@@ -66,13 +66,19 @@ class DocumentService:
             raise
 
     @transaction.atomic
-    def create_document(self, data: dict) -> Document:
+    def create_document(self, company: Company, data: dict) -> Document:
         """
         Create a new document in the local database, send details to ZapSign API,
         and update the document with ZapSign's response.
         """
         try:
             logger.info(f"Starting the creation process for a new document with data: {data}")
+
+            signers_data = data.pop("signers", [])
+
+            url_pdf = data.pop("url_pdf", None)
+
+            data['company_id'] = company.id
 
             document = self.document_repository.create_document(data)
 
@@ -84,7 +90,7 @@ class DocumentService:
 
             zap_sign_payload = {
                 "name": document.name,
-                "url_pdf": data.get("url_pdf"),
+                "url_pdf": url_pdf,
                 "signers": [
                     {
                         "name": signer.get("name"),
@@ -92,7 +98,7 @@ class DocumentService:
                         "auth_mode": "assinaturaTela",
                         "send_automatic_email": True,
                     }
-                    for signer in data.get("signers", [])
+                    for signer in signers_data
                 ],
             }
 
@@ -114,10 +120,6 @@ class DocumentService:
                 "zap_sign_external_id": zap_sign_response.get("external_id"),
             }
 
-            if not all(document_update_data.values()):
-                logger.error("Missing fields in ZapSign response.")
-                raise MissingZapSignResponseFieldsException()
-
             updated_document = self.document_repository.update_document(document, **document_update_data)
 
             if not updated_document:
@@ -126,12 +128,12 @@ class DocumentService:
 
             logger.info(f"Document updated with ZapSign details: {document_update_data}")
 
-            for signer in zap_sign_response.get("signers", []):
+            for signer, original_signer_data in zip(zap_sign_response.get("signers", []), signers_data):
                 signer_data = {
                     "token": signer.get("token"),
                     "status": signer.get("status"),
-                    "name": signer.get("name"),
-                    "email": signer.get("email"),
+                    "name": original_signer_data.get("name"),
+                    "email": original_signer_data.get("email"),
                     "external_id": signer.get("external_id"),
                     "document": updated_document,
                 }
@@ -143,26 +145,6 @@ class DocumentService:
                 logger.info(f"Signer created with ID {created_signer.id} for document {updated_document.id}.")
 
             return updated_document
-
-        except FailedToCreateDocumentException as e:
-            logger.error(f"Failed to create document. Details: {str(e)}")
-            raise
-
-        except FailedToCreateDocumentInZapSignException as e:
-            logger.error(f"Failed to create document in ZapSign. Details: {str(e)}")
-            raise
-
-        except MissingZapSignResponseFieldsException as e:
-            logger.error(f"Missing fields in ZapSign response. Details: {str(e)}")
-            raise
-
-        except FailedToUpdateDocumentException as e:
-            logger.error(f"Failed to update document. Details: {str(e)}")
-            raise
-
-        except FailedToCreateSignerException as e:
-            logger.error(f"Failed to create signer. Details: {str(e)}")
-            raise
 
         except Exception as e:
             logger.error(f"An unexpected error occurred during document creation: {str(e)}")

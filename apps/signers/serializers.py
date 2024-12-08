@@ -10,7 +10,9 @@ class SignerSerializer(serializers.ModelSerializer):
 
 class SignerCreateSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=255)
-    email = serializers.EmailField()
+    email = serializers.EmailField(required=True)
+    auth_mode = serializers.CharField(max_length=50, required=False, default="assinaturaTela")
+    send_automatic_email = serializers.BooleanField(required=False, default=True)
 
 
 class SignerUpdateSerializer(serializers.Serializer):
