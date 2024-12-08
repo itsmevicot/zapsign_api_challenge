@@ -66,10 +66,10 @@ class SignerService:
         """
         try:
             logger.info(f"Creating a new signer with data: {data}")
-
             self.document_service.validate_document_ownership(document_id=data["document_id"], company=company)
-
-            return self.signer_repository.create_signer(data)
+            allowed_fields = {"name", "email", "document_id"}
+            filtered_data = {key: value for key, value in data.items() if key in allowed_fields}
+            return self.signer_repository.create_signer(filtered_data)
         except Exception as e:
             logger.error(f"An unexpected error occurred while creating a signer: {str(e)}")
             raise
