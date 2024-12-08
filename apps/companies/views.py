@@ -78,7 +78,7 @@ class CompanyDetailView(APIView):
         """
         Get details of a company.
         """
-        company = self.company_service.get_company(company_id)
+        company = self.company_service.get_company(company_id, request.user)
         serializer = CompanySerializer(company)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
