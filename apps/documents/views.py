@@ -29,11 +29,11 @@ class DocumentListView(APIView):
             200: DocumentSerializer(many=True)
         },
     )
-    def get(self, request, company_id):
+    def get(self, request, *args, **kwargs):
         """
         List documents for a company.
         """
-        documents = self.document_service.list_documents(company_id)
+        documents = self.document_service.list_documents(request.user.id)
         serializer = DocumentSerializer(documents, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -77,11 +77,11 @@ class DocumentDetailView(APIView):
             200: DocumentSerializer
         },
     )
-    def get(self, request, company_id, document_id):
+    def get(self, request, document_id):
         """
         Retrieve a document for a specific company.
         """
-        document = self.document_service.get_document(document_id, company_id)
+        document = self.document_service.get_document(document_id, request.user)
         serializer = DocumentSerializer(document)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

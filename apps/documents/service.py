@@ -2,6 +2,7 @@ import logging
 from typing import Optional, List
 from django.db import transaction
 
+from apps.companies.models import Company
 from apps.documents.models import Document
 from apps.documents.repository import DocumentRepository
 from apps.signers.repository import SignerRepository
@@ -24,24 +25,24 @@ class DocumentService:
         self.signer_repository = signer_repository or SignerRepository()
         self.zap_sign_service = zap_sign_service or ZapSignService()
 
-    def get_document(self, document_id: int, company_id: int) -> Document:
+    def get_document(self, document_id: int, company: Company) -> Document:
         """
         Retrieve a document by ID and validate ownership.
         """
         try:
-            logger.info(f"Fetching document with ID {document_id} for company ID {company_id}.")
+            logger.info(f"Fetching document with ID {document_id} for company ID {company.id}.")
             document = self.document_repository.get_document_by_id(document_id)
             if not document:
                 logger.error(f"Document with ID {document_id} not found.")
                 raise DocumentNotFoundException(document_id)
-            if document.company_id != company_id:
-                logger.error(f"Unauthorized access to document ID {document_id} by company ID {company_id}.")
+            if document.company_id != company.id:
+                logger.error(f"Unauthorized access to document ID {document_id} by company ID {company.id}.")
                 raise UnauthorizedDocumentAccessException(document_id)
             return document
         except (DocumentNotFoundException, UnauthorizedDocumentAccessException):
             raise
         except Exception as e:
-            logger.error(f"An unexpected error occurred while fetching document ID {document_id}: {str(e)}")
+            logger.exception(f"An unexpected error occurred while fetching document ID {document_id}: {str(e)}")
             raise
 
     def list_documents(self, company_id: int) -> List[Document]:

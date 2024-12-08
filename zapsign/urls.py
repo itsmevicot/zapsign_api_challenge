@@ -38,7 +38,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/auth/', include('apps.authentication.urls')),
     path('api/v1/companies/', include('apps.companies.urls')),
-    path('api/v1/companies/<int:company_id>/documents/', include('apps.documents.urls')),
+    path('api/v1/documents/', include('apps.documents.urls')),
     path('api/v1/documents/<int:document_id>/signers/', include('apps.signers.urls')),
 ]
 
