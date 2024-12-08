@@ -9,11 +9,8 @@ class SignerSerializer(serializers.ModelSerializer):
 
 
 class SignerCreateSerializer(serializers.Serializer):
-    token = serializers.CharField(max_length=255)
-    status = serializers.CharField(max_length=50)
     name = serializers.CharField(max_length=255)
     email = serializers.EmailField()
-    document = serializers.IntegerField()
 
 
 class SignerUpdateSerializer(serializers.Serializer):
@@ -21,3 +18,4 @@ class SignerUpdateSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=255, required=False)
     email = serializers.EmailField(required=False)
     external_id = serializers.CharField(max_length=255, required=False)
+    token = serializers.CharField(max_length=255)

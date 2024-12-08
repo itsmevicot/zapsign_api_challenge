@@ -2,6 +2,7 @@ from typing import Optional
 
 from django.db.models import QuerySet
 
+from apps.companies.models import Company
 from apps.documents.models import Document
 
 

@@ -28,12 +28,12 @@ class SignerRepository:
         return Signer.objects.create(**data)
 
     @staticmethod
-    def update_signer(signer: Signer, **kwargs) -> Signer:
+    def update_signer(signer: Signer, data: dict) -> Signer:
         """
-        Update an existing signer.
+        Update an existing signer with new data.
         """
-        for key, value in kwargs.items():
-            setattr(signer, key, value)
+        for field, value in data.items():
+            setattr(signer, field, value)
         signer.save()
         return signer
 

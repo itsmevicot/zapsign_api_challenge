@@ -17,7 +17,7 @@ class DocumentCreateSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=255)
     status = serializers.CharField(max_length=50)
     created_by = serializers.CharField(max_length=255)
-    company = serializers.IntegerField()
+    company_id = serializers.IntegerField()
 
 
 class DocumentUpdateSerializer(serializers.Serializer):

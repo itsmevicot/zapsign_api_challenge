@@ -56,5 +56,4 @@ class CompanyCreateResponseSerializer(serializers.Serializer):
 
 class CompanyUpdateSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=255, required=False)
-    is_active = serializers.BooleanField(required=False)
     api_token = serializers.CharField(max_length=255, required=False)

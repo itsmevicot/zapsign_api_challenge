@@ -65,7 +65,7 @@ class AuthenticationService:
         email = company_data.get('email')
         if self.company_repository.company_exists_by_email(email):
             logger.error(f"Registration failed: Company with email {email} already exists.")
-            raise CompanyAlreadyExistsException(email=email)
+            raise CompanyAlreadyExistsException()
 
         try:
             company = self.company_repository.create_company(company_data)
@@ -88,4 +88,4 @@ class AuthenticationService:
             logger.info("Logout successful.")
         except Exception as e:
             logger.error(f"Logout failed: {str(e)}")
-            raise FailedToBlacklistTokenException(reason=str(e))
+            raise FailedToBlacklistTokenException()

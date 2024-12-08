@@ -1,5 +1,6 @@
 from typing import Optional
 
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -13,6 +14,8 @@ class DocumentListView(APIView):
     """
     API view to handle document listing and creation.
     """
+
+    permission_classes = [IsAuthenticated]
 
     def __init__(
             self,
@@ -45,15 +48,13 @@ class DocumentListView(APIView):
             201: DocumentSerializer
         },
     )
-    def post(self, request, company_id):
+    def post(self, request, *args, **kwargs):
         """
         Create a new document for a company.
         """
         serializer = DocumentCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        data = serializer.validated_data
-        data["company_id"] = company_id
-        document = self.document_service.create_document(data)
+        document = self.document_service.create_document(serializer.data)
         return Response(DocumentSerializer(document).data, status=status.HTTP_201_CREATED)
 
 
@@ -110,9 +111,9 @@ class DocumentDetailView(APIView):
             204: "Document deleted successfully."
         },
     )
-    def delete(self, request, company_id, document_id):
+    def delete(self, request, document_id):
         """
         Delete a document for a specific company.
         """
-        self.document_service.delete_document(document_id, company_id)
+        self.document_service.delete_document(document_id, request.user)
         return Response(status=status.HTTP_204_NO_CONTENT)

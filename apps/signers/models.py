@@ -2,12 +2,12 @@ from django.db import models
 
 
 class Signer(models.Model):
-    token = models.CharField(max_length=255, null=False)
-    status = models.CharField(max_length=50, null=False)
+    token = models.CharField(max_length=255, null=True)
+    status = models.CharField(max_length=50, null=True)
     name = models.CharField(max_length=255, null=False)
     email = models.EmailField(max_length=255, null=False)
     external_id = models.CharField(max_length=255, null=True, blank=True)
-    document = models.ForeignKey("documents.Document", on_delete=models.PROTECT, related_name='signers')
+    document = models.ForeignKey("documents.Document", on_delete=models.CASCADE, related_name='signers')
 
     class Meta:
         verbose_name = "Signer"

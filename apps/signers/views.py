@@ -1,18 +1,22 @@
 from typing import Optional
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
+from django.db import transaction
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from apps.signers.serializers import SignerSerializer, SignerCreateSerializer, SignerUpdateSerializer
-from apps.signers.service import SignerService
+from apps.signers.services import SignerService
 
 
 class SignerListView(APIView):
     """
     API view to handle signer listing and creation.
     """
+
+    permission_classes = [IsAuthenticated]
 
     def __init__(
             self,
@@ -33,7 +37,7 @@ class SignerListView(APIView):
         """
         List signers for a document.
         """
-        signers = self.signer_service.list_signers(document_id)
+        signers = self.signer_service.list_signers(document_id, request.user)
         serializer = SignerSerializer(signers, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -45,16 +49,18 @@ class SignerListView(APIView):
             201: SignerSerializer
         },
     )
-    def post(self, request, document_id):
+    @transaction.atomic
+    def post(self, request, document_id, *args, **kwargs):
         """
         Create a new signer for a document.
         """
-        serializer = SignerCreateSerializer(data=request.data)
+        serializer = SignerCreateSerializer(data=request.data, many=True)
         serializer.is_valid(raise_exception=True)
-        data = serializer.validated_data
-        data["document"] = document_id
-        signer = self.signer_service.create_signer(data)
-        return Response(SignerSerializer(signer).data, status=status.HTTP_201_CREATED)
+        signers = [
+            self.signer_service.create_signer({**signer_data, "document_id": document_id}, request.user)
+            for signer_data in serializer.validated_data
+        ]
+        return Response(SignerSerializer(signers, many=True).data, status=status.HTTP_201_CREATED)
 
 
 class SignerDetailView(APIView):
@@ -63,9 +69,9 @@ class SignerDetailView(APIView):
     """
 
     def __init__(
-            self,
-            signer_service: Optional[SignerService] = None,
-            **kwargs
+        self,
+        signer_service: Optional[SignerService] = None,
+        **kwargs
     ):
         super().__init__(**kwargs)
         self.signer_service = signer_service or SignerService()
@@ -77,11 +83,11 @@ class SignerDetailView(APIView):
             200: SignerSerializer
         },
     )
-    def get(self, request, document_id, signer_id):
+    def get(self, request, signer_id):
         """
-        Retrieve a signer for a specific document.
+        Retrieve a signer by ID.
         """
-        signer = self.signer_service.get_signer(signer_id, document_id)
+        signer = self.signer_service.get_signer(signer_id, request.user)
         serializer = SignerSerializer(signer)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -93,14 +99,15 @@ class SignerDetailView(APIView):
             200: SignerSerializer
         },
     )
-    def put(self, request, document_id, signer_id):
+    @transaction.atomic
+    def put(self, request, signer_id):
         """
-        Update a signer for a specific document.
+        Update a signer by ID.
         """
         serializer = SignerUpdateSerializer(data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
-        data = serializer.validated_data
-        signer = self.signer_service.update_signer(signer_id, document_id, data)
+
+        signer = self.signer_service.update_signer(signer_id, company=request.user, data=serializer.validated_data)
         return Response(SignerSerializer(signer).data, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(
@@ -110,9 +117,10 @@ class SignerDetailView(APIView):
             204: "Signer deleted successfully."
         },
     )
-    def delete(self, request, document_id, signer_id):
+    @transaction.atomic
+    def delete(self, request, signer_id):
         """
-        Delete a signer for a specific document.
+        Delete a signer by ID.
         """
-        self.signer_service.delete_signer(signer_id, document_id)
+        self.signer_service.delete_signer(signer_id, company=request.user)
         return Response(status=status.HTTP_204_NO_CONTENT)

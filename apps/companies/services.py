@@ -21,17 +21,22 @@ class CompanyService:
         Retrieve a company by its ID and validate ownership.
         """
         try:
-            logger.info(f"Fetching company with ID: {company_id} for authenticated company ID: {authenticated_company.id}.")
+            logger.info(f"Fetching company with ID: {company_id}"
+                        f" for authenticated company ID: {authenticated_company.id}.")
             company = self.company_repository.get_company_by_id(company_id)
             if not company:
                 logger.error(f"Company with ID {company_id} not found.")
-                raise CompanyNotFoundException(company_id)
+                raise CompanyNotFoundException()
             if company != authenticated_company:
-                logger.error(f"Unauthorized access to company ID {company_id} by company ID {authenticated_company.id}.")
-                raise UnauthorizedCompanyAccessException(company_id)
+                logger.error(f"Unauthorized access to company ID {company_id}"
+                             f" by company ID {authenticated_company.id}.")
+                raise UnauthorizedCompanyAccessException()
             return company
         except CompanyNotFoundException:
             raise
+        except Company.DoesNotExist:
+            logger.error(f"Company with ID {company_id} not found.")
+            raise CompanyNotFoundException()
         except UnauthorizedCompanyAccessException:
             raise
         except Exception as e:
@@ -68,7 +73,8 @@ class CompanyService:
         """
         try:
             company = self.get_company(company_id, authenticated_company)
-            logger.info(f"Updating company ID {company_id} for authenticated company ID {authenticated_company.id} with data: {data}")
+            logger.info(f"Updating company ID {company_id}"
+                        f" for authenticated company ID {authenticated_company.id} with data: {data}")
             return self.company_repository.update_company(company, **data)
         except CompanyNotFoundException:
             raise

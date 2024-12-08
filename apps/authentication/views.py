@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.authentication.serializers import LoginSerializer, TokenResponseSerializer, LogoutResponseSerializer
-from apps.authentication.service import AuthenticationService
+from apps.authentication.services import AuthenticationService
 from apps.companies.serializers import CompanyCreateSerializer, CompanyCreateResponseSerializer
 
 

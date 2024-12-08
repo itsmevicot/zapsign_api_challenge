@@ -34,16 +34,25 @@ class DocumentService:
             document = self.document_repository.get_document_by_id(document_id)
             if not document:
                 logger.error(f"Document with ID {document_id} not found.")
-                raise DocumentNotFoundException(document_id)
+                raise DocumentNotFoundException()
             if document.company_id != company.id:
                 logger.error(f"Unauthorized access to document ID {document_id} by company ID {company.id}.")
-                raise UnauthorizedDocumentAccessException(document_id)
+                raise UnauthorizedDocumentAccessException()
             return document
         except (DocumentNotFoundException, UnauthorizedDocumentAccessException):
             raise
         except Exception as e:
             logger.exception(f"An unexpected error occurred while fetching document ID {document_id}: {str(e)}")
             raise
+
+    @staticmethod
+    def validate_document_ownership(document_id: int, company: Company) -> None:
+        """
+        Validate if the document belongs to the specified company.
+        Raises an exception if validation fails.
+        """
+        if not Document.objects.filter(id=document_id, company=company).exists():
+            raise DocumentNotFoundException()
 
     def list_documents(self, company_id: int) -> List[Document]:
         """
@@ -155,13 +164,13 @@ class DocumentService:
             raise
 
     @transaction.atomic
-    def update_document(self, document_id: int, company_id: int, data: dict) -> Document:
+    def update_document(self, document_id: int, company: Company, data: dict) -> Document:
         """
         Update an existing document.
         """
         try:
-            document = self.get_document(document_id, company_id)
-            logger.info(f"Updating document ID {document_id} for company ID {company_id} with data: {data}")
+            document = self.get_document(document_id, company)
+            logger.info(f"Updating document ID {document_id} for company ID {company.id} with data: {data}")
             return self.document_repository.update_document(document, **data)
         except (DocumentNotFoundException, UnauthorizedDocumentAccessException):
             raise
@@ -170,13 +179,13 @@ class DocumentService:
             raise
 
     @transaction.atomic
-    def delete_document(self, document_id: int, company_id: int) -> None:
+    def delete_document(self, document_id: int, company: Company) -> None:
         """
         Delete a document.
         """
         try:
-            document = self.get_document(document_id, company_id)
-            logger.info(f"Deleting document ID {document_id} for company ID {company_id}.")
+            document = self.get_document(document_id, company)
+            logger.info(f"Deleting document ID {document_id} for company ID {company.id}.")
             self.document_repository.delete_document(document)
         except (DocumentNotFoundException, UnauthorizedDocumentAccessException):
             raise

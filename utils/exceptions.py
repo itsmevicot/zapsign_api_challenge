@@ -18,17 +18,17 @@ class ExceptionMessageBuilder(APIException):
 
 
 class CompanyNotFoundException(ExceptionMessageBuilder):
-    def __init__(self, company_id: int):
+    def __init__(self):
         self.title = "Company Not Found"
-        self.message = f"Company with ID {company_id} not found."
+        self.message = f"Company was not found or doesn't exist."
         self.status_code = status.HTTP_404_NOT_FOUND
         self.detail = {"title": self.title, "message": self.message}
 
 
 class UnauthorizedCompanyAccessException(ExceptionMessageBuilder):
-    def __init__(self, company_id: int):
+    def __init__(self):
         self.title = "Unauthorized Access"
-        self.message = f"You are not authorized to access company ID {company_id}."
+        self.message = f"You are not authorized to access this company."
         self.status_code = status.HTTP_403_FORBIDDEN
         self.detail = {"title": self.title, "message": self.message}
 
@@ -42,33 +42,33 @@ class InvalidCredentialsException(ExceptionMessageBuilder):
 
 
 class DocumentNotFoundException(ExceptionMessageBuilder):
-    def __init__(self, document_id: int):
+    def __init__(self):
         self.title = "Document Not Found"
-        self.message = f"Document with ID {document_id} not found."
+        self.message = f"Document was not found or doesn't exist."
         self.status_code = status.HTTP_404_NOT_FOUND
         self.detail = {"title": self.title, "message": self.message}
 
 
 class UnauthorizedDocumentAccessException(ExceptionMessageBuilder):
-    def __init__(self, document_id: int):
+    def __init__(self):
         self.title = "Unauthorized Access"
-        self.message = f"You are not authorized to access document ID {document_id}."
+        self.message = f"You are not authorized to access this document."
         self.status_code = status.HTTP_403_FORBIDDEN
         self.detail = {"title": self.title, "message": self.message}
 
 
 class SignerNotFoundException(ExceptionMessageBuilder):
-    def __init__(self, signer_id: int):
+    def __init__(self):
         self.title = "Signer Not Found"
-        self.message = f"Signer with ID {signer_id} not found."
+        self.message = f"Signer was not found or doesn't exist."
         self.status_code = status.HTTP_404_NOT_FOUND
         self.detail = {"title": self.title, "message": self.message}
 
 
 class UnauthorizedSignerAccessException(ExceptionMessageBuilder):
-    def __init__(self, signer_id: int):
+    def __init__(self):
         self.title = "Unauthorized Access"
-        self.message = f"You are not authorized to access signer ID {signer_id}."
+        self.message = f"You are not authorized to view information about this signer."
         self.status_code = status.HTTP_403_FORBIDDEN
         self.detail = {"title": self.title, "message": self.message}
 
@@ -122,18 +122,18 @@ class MissingRefreshTokenException(ExceptionMessageBuilder):
 
 
 class FailedToBlacklistTokenException(ExceptionMessageBuilder):
-    def __init__(self, reason: str):
+    def __init__(self):
         self.title = "Failed to Blacklist Token"
-        self.message = f"An error occurred while blacklisting the refresh token: {reason}"
+        self.message = f"An error occurred while blacklisting the refresh token."
         self.status_code = status.HTTP_400_BAD_REQUEST
         self.detail = {"title": self.title, "message": self.message}
 
 
 class CompanyAlreadyExistsException(ExceptionMessageBuilder):
-    def __init__(self, email: str):
+    def __init__(self):
         self.title = "Company Already Exists"
-        self.message = f"A company with the email '{email}' already exists."
-        self.status_code = status.HTTP_400_BAD_REQUEST
+        self.message = f"A company with this email already exists."
+        self.status_code = status.HTTP_409_CONFLICT
         self.detail = {"title": self.title, "message": self.message}
 
 

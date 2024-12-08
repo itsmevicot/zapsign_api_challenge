@@ -1,0 +1,269 @@
+[
+    {
+        "model": "companies.company",
+        "pk": 1,
+        "fields": {
+            "email": "alpha@example.com",
+            "name": "Company Alpha",
+            "password": "pbkdf2_sha256$870000$tQXIGbm0uCHyU5eP9docV0$k1oQ1dAAY70VTqhogwyK1FRQJWad2iNKvcOQ2ha+oRU=",
+            "created_at": "2024-12-01T10:00:00Z",
+            "last_update_at": "2024-12-01T11:00:00Z",
+            "api_token": "token_alpha",
+            "is_active": true,
+            "is_staff": false
+        }
+    },
+    {
+        "model": "companies.company",
+        "pk": 2,
+        "fields": {
+            "email": "beta@example.com",
+            "name": "Company Beta",
+            "password": "pbkdf2_sha256$870000$mH1TAgkPTBqzS2sVyidqPU$qSpV61Q0URbvZe3QAaTgHxCLMAYvly4d7xUO/qgUS4g=",
+            "created_at": "2024-12-01T12:00:00Z",
+            "last_update_at": "2024-12-01T13:00:00Z",
+            "api_token": "token_beta",
+            "is_active": true,
+            "is_staff": false
+        }
+    },
+    {
+        "model": "companies.company",
+        "pk": 3,
+        "fields": {
+            "email": "gamma@example.com",
+            "name": "Company Gamma",
+            "password": "pbkdf2_sha256$870000$0Zn81OD8TaKzIeynwrZs6q$sCMwPeV0PL42cqBdQ264fSNTVk/cIbRWdcr6LvB/CgQ=",
+            "created_at": "2024-12-01T14:00:00Z",
+            "last_update_at": "2024-12-01T15:00:00Z",
+            "api_token": "token_gamma",
+            "is_active": true,
+            "is_staff": false
+        }
+    },
+    {
+        "model": "companies.company",
+        "pk": 4,
+        "fields": {
+            "email": "admin@admin.com",
+            "name": "ADMIN SUPER USER",
+            "password": "pbkdf2_sha256$870000$0Zn81OD8TaKzIeynwrZs6q$sCMwPeV0PL42cqBdQ264fSNTVk/cIbRWdcr6LvB/CgQ=",
+            "created_at": "2024-12-01T14:00:00Z",
+            "last_update_at": "2024-12-01T15:00:00Z",
+            "api_token": "token_gamma",
+            "is_active": true,
+            "is_superuser": true,
+            "is_staff": false
+        }
+    },
+    {
+        "model": "documents.document",
+        "pk": 1,
+        "fields": {
+            "open_id": 101,
+            "token": "doc1_alpha",
+            "name": "Document 1 Alpha",
+            "status": "pending",
+            "created_at": "2024-12-01T10:30:00Z",
+            "last_updated_at": "2024-12-01T11:00:00Z",
+            "created_by": "admin_alpha",
+            "company": 1,
+            "external_id": "ext1_alpha"
+        }
+    },
+    {
+        "model": "documents.document",
+        "pk": 2,
+        "fields": {
+            "open_id": 102,
+            "token": "doc2_alpha",
+            "name": "Document 2 Alpha",
+            "status": "completed",
+            "created_at": "2024-12-01T11:30:00Z",
+            "last_updated_at": "2024-12-01T12:00:00Z",
+            "created_by": "user_alpha",
+            "company": 1,
+            "external_id": "ext2_alpha"
+        }
+    },
+    {
+        "model": "documents.document",
+        "pk": 3,
+        "fields": {
+            "open_id": 103,
+            "token": "doc1_beta",
+            "name": "Document 1 Beta",
+            "status": "pending",
+            "created_at": "2024-12-01T12:30:00Z",
+            "last_updated_at": "2024-12-01T13:00:00Z",
+            "created_by": "admin_beta",
+            "company": 2,
+            "external_id": "ext1_beta"
+        }
+    },
+    {
+        "model": "documents.document",
+        "pk": 4,
+        "fields": {
+            "open_id": 104,
+            "token": "doc2_beta",
+            "name": "Document 2 Beta",
+            "status": "completed",
+            "created_at": "2024-12-01T13:30:00Z",
+            "last_updated_at": "2024-12-01T14:00:00Z",
+            "created_by": "user_beta",
+            "company": 2,
+            "external_id": "ext2_beta"
+        }
+    },
+    {
+        "model": "documents.document",
+        "pk": 5,
+        "fields": {
+            "open_id": 105,
+            "token": "doc1_gamma",
+            "name": "Document 1 Gamma",
+            "status": "pending",
+            "created_at": "2024-12-01T14:30:00Z",
+            "last_updated_at": "2024-12-01T15:00:00Z",
+            "created_by": "admin_gamma",
+            "company": 3,
+            "external_id": "ext1_gamma"
+        }
+    },
+    {
+        "model": "documents.document",
+        "pk": 6,
+        "fields": {
+            "open_id": 106,
+            "token": "doc2_gamma",
+            "name": "Document 2 Gamma",
+            "status": "completed",
+            "created_at": "2024-12-01T15:30:00Z",
+            "last_updated_at": "2024-12-01T16:00:00Z",
+            "created_by": "user_gamma",
+            "company": 3,
+            "external_id": "ext2_gamma"
+        }
+    },
+    {
+        "model": "signers.signer",
+        "pk": 1,
+        "fields": {
+            "token": "signer1_doc1_alpha",
+            "status": "signed",
+            "name": "John Doe",
+            "email": "johndoe@example.com",
+            "external_id": "signer1_ext1",
+            "document": 1
+        }
+    },
+    {
+        "model": "signers.signer",
+        "pk": 2,
+        "fields": {
+            "token": "signer2_doc1_alpha",
+            "status": "pending",
+            "name": "Jane Doe",
+            "email": "janedoe@example.com",
+            "external_id": "signer2_ext1",
+            "document": 1
+        }
+    },
+    {
+        "model": "signers.signer",
+        "pk": 3,
+        "fields": {
+            "token": "signer1_doc2_alpha",
+            "status": "signed",
+            "name": "Mike Smith",
+            "email": "mikesmith@example.com",
+            "external_id": "signer1_ext2",
+            "document": 2
+        }
+    },
+    {
+        "model": "signers.signer",
+        "pk": 4,
+        "fields": {
+            "token": "signer2_doc2_alpha",
+            "status": "pending",
+            "name": "Anna Brown",
+            "email": "annabrown@example.com",
+            "external_id": "signer2_ext2",
+            "document": 2
+        }
+    },
+    {
+        "model": "signers.signer",
+        "pk": 5,
+        "fields": {
+            "token": "signer1_doc1_beta",
+            "status": "signed",
+            "name": "Chris Evans",
+            "email": "chrisevans@example.com",
+            "external_id": "signer1_ext3",
+            "document": 3
+        }
+    },
+    {
+        "model": "signers.signer",
+        "pk": 6,
+        "fields": {
+            "token": "signer2_doc1_beta",
+            "status": "pending",
+            "name": "Natasha Romanoff",
+            "email": "natashar@example.com",
+            "external_id": "signer2_ext3",
+            "document": 3
+        }
+    },
+    {
+        "model": "signers.signer",
+        "pk": 7,
+        "fields": {
+            "token": "signer1_doc2_beta",
+            "status": "signed",
+            "name": "Bruce Wayne",
+            "email": "brucewayne@example.com",
+            "external_id": "signer1_ext4",
+            "document": 4
+        }
+    },
+    {
+        "model": "signers.signer",
+        "pk": 8,
+        "fields": {
+            "token": "signer2_doc2_beta",
+            "status": "pending",
+            "name": "Clark Kent",
+            "email": "clarkkent@example.com",
+            "external_id": "signer2_ext4",
+            "document": 4
+        }
+    },
+    {
+        "model": "signers.signer",
+        "pk": 9,
+        "fields": {
+            "token": "signer1_doc1_gamma",
+            "status": "signed",
+            "name": "Peter Parker",
+            "email": "peterparker@example.com",
+            "external_id": "signer1_ext5",
+            "document": 5
+        }
+    },
+    {
+        "model": "signers.signer",
+        "pk": 10,
+        "fields": {
+            "token": "signer2_doc1_gamma",
+            "status": "pending",
+            "name": "Tony Stark",
+            "email": "tonystark@example.com",
+            "external_id": "signer2_ext5",
+            "document": 5
+        }
+    }
+]

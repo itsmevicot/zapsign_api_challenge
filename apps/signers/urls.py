@@ -4,6 +4,6 @@ from apps.signers.views import SignerListView, SignerDetailView
 app_name = "signers"
 
 urlpatterns = [
-    path('', SignerListView.as_view(), name='signer_list'),
+    path('document/<int:document_id>/', SignerListView.as_view(), name='signer_list'),
     path('<int:signer_id>/', SignerDetailView.as_view(), name='signer_detail'),
 ]
