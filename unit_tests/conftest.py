@@ -1,3 +1,5 @@
+import uuid
+
 import pytest
 from rest_framework.test import APIClient
 from apps.companies.models import Company
@@ -28,7 +30,7 @@ def authenticated_user(db):
     Creates the company if it doesn't already exist.
     """
     company = Company.objects.create_user(
-        email="test@company.com",
+        email=f"test_{uuid.uuid4()}@company.com",
         password="securepassword",
         name="Test Company",
         api_token="123e4567-e89b-12d3-a456-426614174000",

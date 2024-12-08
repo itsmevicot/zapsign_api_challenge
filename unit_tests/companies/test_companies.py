@@ -1,9 +1,10 @@
 import uuid
 from unittest.mock import patch
+
 import pytest
 from rest_framework import status
+
 from utils.exceptions import (
-    CompanyNotFoundException,
     UnauthorizedCompanyAccessException,
 )
 
