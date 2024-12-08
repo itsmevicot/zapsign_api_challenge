@@ -1,4 +1,5 @@
 import uuid
+from unittest.mock import patch
 
 import pytest
 from rest_framework.test import APIClient
@@ -105,3 +106,12 @@ def signers(db, test_document):
     signer_1 = Signer.objects.create(name="Signer 1", email="signer1@example.com", document=test_document)
     signer_2 = Signer.objects.create(name="Signer 2", email="signer2@example.com", document=test_document)
     return [signer_1, signer_2]
+
+
+@pytest.fixture(autouse=True)
+def mock_zapsign_service():
+    """
+    Automatically mock ZapSignService for all tests.
+    """
+    with patch("apps.documents.service.ZapSignService.create_document_in_zapsign") as mock_service:
+        yield mock_service
