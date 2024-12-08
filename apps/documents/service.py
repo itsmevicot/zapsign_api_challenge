@@ -76,26 +76,35 @@ class DocumentService:
 
             document = self.document_repository.create_document(data)
 
-            if document:
-                logger.info(f"Document created in local database with ID {document.id}.")
-            else:
+            if not document:
                 logger.error("Failed to create document in local database.")
                 raise FailedToCreateDocumentException()
 
+            logger.info(f"Document created in local database with ID {document.id}.")
+
             zap_sign_payload = {
                 "name": document.name,
-                "signers": data.get("signers"),
-                "base64_pdf": data.get("base64_pdf"),
                 "url_pdf": data.get("url_pdf"),
+                "signers": [
+                    {
+                        "name": signer.get("name"),
+                        "email": signer.get("email"),
+                        "auth_mode": "assinaturaTela",
+                        "send_automatic_email": True,
+                    }
+                    for signer in data.get("signers", [])
+                ],
             }
+
+            logger.info(f"Payload for ZapSign API: {zap_sign_payload}")
 
             zap_sign_response = self.zap_sign_service.create_document_in_zapsign(**zap_sign_payload)
 
-            if zap_sign_response:
-                logger.info(f"ZapSign API response: {zap_sign_response}")
-            else:
+            if not zap_sign_response:
                 logger.error("Failed to create document in ZapSign API.")
                 raise FailedToCreateDocumentInZapSignException()
+
+            logger.info(f"ZapSign API response: {zap_sign_response}")
 
             document_update_data = {
                 "token": zap_sign_response.get("token"),
@@ -111,11 +120,11 @@ class DocumentService:
 
             updated_document = self.document_repository.update_document(document, **document_update_data)
 
-            if updated_document:
-                logger.info(f"Document updated with ZapSign details: {document_update_data}")
-            else:
+            if not updated_document:
                 logger.error("Failed to update document with ZapSign details.")
                 raise FailedToUpdateDocumentException()
+
+            logger.info(f"Document updated with ZapSign details: {document_update_data}")
 
             for signer in zap_sign_response.get("signers", []):
                 signer_data = {
@@ -127,11 +136,11 @@ class DocumentService:
                     "document": updated_document,
                 }
                 created_signer = self.signer_repository.create_signer(signer_data)
-                if created_signer:
-                    logger.info(f"Signer created with ID {created_signer.id} for document {updated_document.id}.")
-                else:
+                if not created_signer:
                     logger.error(f"Failed to create signer with data {signer_data} for document {updated_document.id}.")
                     raise FailedToCreateSignerException()
+
+                logger.info(f"Signer created with ID {created_signer.id} for document {updated_document.id}.")
 
             return updated_document
 
@@ -153,10 +162,6 @@ class DocumentService:
 
         except FailedToCreateSignerException as e:
             logger.error(f"Failed to create signer. Details: {str(e)}")
-            raise
-
-        except ValueError as ve:
-            logger.error(f"Validation error during document creation: {str(ve)}")
             raise
 
         except Exception as e:

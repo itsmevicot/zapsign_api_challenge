@@ -36,26 +36,21 @@ class ZapSignService:
             self,
             name: str,
             signers: list,
-            base64_pdf: str = None,
-            url_pdf: str = None
+            url_pdf: str
     ) -> dict:
         """
-        Creates a document in the ZapSign API.
+        Creates a document in the ZapSign API using a URL to the PDF.
         """
         try:
-            if not base64_pdf and not url_pdf:
-                logger.error("Failed to create document: Neither base64_pdf nor url_pdf was provided.")
-                raise ValueError("You must provide either a base64-encoded PDF or a URL.")
+            if not url_pdf:
+                logger.error("Failed to create document: url_pdf was not provided.")
+                raise ValueError("The URL to the PDF (url_pdf) must be provided.")
 
             payload = {
                 "name": name,
+                "url_pdf": url_pdf,
                 "signers": signers
             }
-
-            if base64_pdf:
-                payload["base64_pdf"] = base64_pdf
-            elif url_pdf:
-                payload["url_pdf"] = url_pdf
 
             logger.info(f"Creating document with payload: {payload}")
             response = requests.post(self.api_base_url, headers=self.get_headers(), json=payload)
