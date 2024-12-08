@@ -1,6 +1,8 @@
+import uuid
+
 import pytest
 from unittest.mock import patch
-from rest_framework import status
+from rest_framework import status, serializers
 from apps.authentication.serializers import TokenResponseSerializer
 from utils.exceptions import (
     InvalidCredentialsException,
@@ -136,3 +138,72 @@ def test_logout_blacklist_failure(mock_auth_service, api_client):
     assert response.status_code == exception.status_code
     assert response.data["error"]["title"] == exception.title
     assert response.data["error"]["message"] == exception.message
+
+
+@pytest.mark.django_db
+@patch("apps.authentication.views.AuthenticationService")
+def test_register_missing_password(mock_auth_service, api_client):
+    response = api_client.post(
+        "/api/v1/auth/register/",
+        {
+            "email": "test@company.com",
+            "name": "No Password Company",
+        },
+        format="json",
+    )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert "password" in response.data["error"]["message"]
+
+
+@pytest.mark.django_db
+@patch("apps.authentication.views.AuthenticationService")
+def test_login_nonexistent_email(mock_auth_service, api_client):
+    mock_auth_service.return_value.login.side_effect = InvalidCredentialsException()
+
+    response = api_client.post(
+        "/api/v1/auth/login/",
+        {"email": "doesnotexist@company.com", "password": "password123"},
+        format="json",
+    )
+
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    assert response.data["error"]["title"] == "Invalid Credentials"
+
+
+@pytest.mark.django_db
+@patch("apps.authentication.views.AuthenticationService")
+def test_logout_expired_token(mock_auth_service, api_client):
+    exception = mock_auth_service.return_value.logout.side_effect = FailedToBlacklistTokenException()
+
+    response = api_client.post(
+        "/api/v1/auth/logout/",
+        {"refresh": "expired_refresh_token"},
+        format="json",
+    )
+
+    assert response.status_code == exception.status_code
+    assert response.data["error"]["title"] == "Failed to Blacklist Token"
+    assert response.data["error"]["message"] == exception.message
+
+
+@pytest.mark.django_db
+@patch("apps.authentication.views.AuthenticationService")
+def test_register_company_already_exists(mock_auth_service, api_client):
+    mock_exception = CompanyAlreadyExistsException()
+    mock_auth_service.return_value.register.side_effect = mock_exception
+
+    response = api_client.post(
+        "/api/v1/auth/register/",
+        {
+            "email": "existing@company.com",
+            "password": "securepassword",
+            "confirm_password": "securepassword",
+            "name": "Duplicate Company",
+            "api_token": uuid.uuid4(),
+        },
+        format="json",
+    )
+
+    assert response.status_code == status.HTTP_409_CONFLICT
+    assert response.data["error"]["title"] == mock_exception.title

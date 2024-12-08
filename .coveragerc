@@ -5,3 +5,5 @@ omit =
     zapsign/wsgi.py
     */migrations/*
     */__init__.py
+    apps.py
+    admin.py
