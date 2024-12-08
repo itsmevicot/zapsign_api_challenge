@@ -7,6 +7,7 @@ from drf_yasg.utils import swagger_auto_schema
 
 from apps.companies.serializers import CompanySerializer, CompanyCreateSerializer, CompanyUpdateSerializer
 from apps.companies.service import CompanyService
+from utils.permissions import IsSuperUser
 
 
 class CompanyListView(APIView):
@@ -19,6 +20,11 @@ class CompanyListView(APIView):
     ):
         super().__init__(**kwargs)
         self.company_service = company_service or CompanyService()
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [IsSuperUser()]
+        return super().get_permissions()
 
     @swagger_auto_schema(
         tags=["companies"],
@@ -74,7 +80,7 @@ class CompanyDetailView(APIView):
             200: CompanySerializer
         },
     )
-    def get(self, request, company_id: int):
+    def get(self, request, company_id: int, *args, **kwargs):
         """
         Get details of a company.
         """
