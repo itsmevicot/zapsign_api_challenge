@@ -62,7 +62,7 @@ class AuthenticationService:
         company_data['password'] = make_password(password)
 
         email = company_data.get('email')
-        if self.company_repository.get_company_by_email(email):
+        if self.company_repository.company_exists_by_email(email):
             logger.error(f"Registration failed: Company with email {email} already exists.")
             raise CompanyAlreadyExistsException(email=email)
 

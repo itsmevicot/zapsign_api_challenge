@@ -15,6 +15,13 @@ class CompanyRepository:
         return Company.objects.get(email=email)
 
     @staticmethod
+    def company_exists_by_email(email: str) -> bool:
+        """
+        Check if a company exists by its email.
+        """
+        return Company.objects.filter(email=email).exists()
+
+    @staticmethod
     def get_company_by_id(company_id: int) -> Optional[Company]:
         """
         Fetch a company by its ID.
