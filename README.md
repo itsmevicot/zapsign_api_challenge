@@ -117,6 +117,10 @@ Access Swagger and Redoc documentation at:
 - [Swagger UI](http://localhost:8000/docs)
 - [Redoc](http://localhost:8000/redoc)
 
+# Frontend Repository
+You can find the frontend repository for this project at:
+[ZapSign Frontend Challenge](https://github.com/itsmevicot/zapsign_frontend_challenge)
+
 ## Postman API Collection
 
 A [Postman API collection](zapsign-backend.postman_collection.json) is included for easier testing. Import the collection and configure the token as an environment variable.
