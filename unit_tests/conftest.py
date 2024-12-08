@@ -22,12 +22,11 @@ def mocked_authentication_service(mocker):
 
 
 @pytest.fixture
-def authenticated_client(db):
+def authenticated_user(db):
     """
     Provides an authenticated API client for a test company.
     Creates the company if it doesn't already exist.
     """
-    # Create a test company
     company = Company.objects.create_user(
         email="test@company.com",
         password="securepassword",
@@ -35,9 +34,26 @@ def authenticated_client(db):
         api_token="123e4567-e89b-12d3-a456-426614174000",
         is_active=True,
     )
-    # Authenticate the API client
     client = APIClient()
     client.force_authenticate(user=company)
+    return client
+
+
+@pytest.fixture
+def authenticated_superuser(db):
+    """
+    Provides an authenticated API client for a superuser.
+    Creates the superuser if it doesn't already exist.
+    """
+    superuser = Company.objects.create_superuser(
+        email="superuser@test.com",
+        password="securepassword",
+        name="Superuser Company",
+        api_token="123e4567-e89b-12d3-a456-426614174000",
+        is_active=True,
+    )
+    client = APIClient()
+    client.force_authenticate(user=superuser)
     return client
 
 
