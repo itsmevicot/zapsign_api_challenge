@@ -36,6 +36,7 @@ class AuthenticationService:
             raise InvalidCredentialsException()
 
         refresh = RefreshToken.for_user(company)
+        refresh['company_id'] = str(company.id)
         logger.info(f"Login successful for email: {email}")
 
         self.company_repository.update_company(company, last_login=timezone.now())
