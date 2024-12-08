@@ -1,13 +1,16 @@
 from rest_framework import serializers
 from apps.documents.models import Document
+from apps.signers.serializers import SignerSerializer
 
 
 class DocumentSerializer(serializers.ModelSerializer):
+    signers = SignerSerializer(many=True, read_only=True)
+
     class Meta:
         model = Document
         fields = [
             "id", "open_id", "token", "name", "status", "created_at", "last_updated_at",
-            "created_by", "company", "external_id"
+            "created_by", "company", "external_id", "signers"
         ]
 
 
