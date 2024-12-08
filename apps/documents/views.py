@@ -94,14 +94,14 @@ class DocumentDetailView(APIView):
             200: DocumentSerializer
         },
     )
-    def put(self, request, company_id, document_id):
+    def put(self, request, document_id):
         """
         Update a document for a specific company.
         """
         serializer = DocumentUpdateSerializer(data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
-        document = self.document_service.update_document(document_id, company_id, data)
+        document = self.document_service.update_document(document_id, request.user, data)
         return Response(DocumentSerializer(document).data, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(
